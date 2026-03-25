@@ -8,7 +8,8 @@
     "copy:native": "mkdir -p out/native && cp -f src/native/transcribe-file out/native/transcribe-file 2>/dev/null || true",
     "build": "npm run build:native && electron-vite build && npm run copy:native",
     "preview": "electron-vite preview",
-    "start": "electron-vite preview"
+    "start": "electron-vite preview",
+    "rebuild": "electron-rebuild -f -w node-pty"
   },
   "dependencies": {
     "clsx": "^2.1.0",

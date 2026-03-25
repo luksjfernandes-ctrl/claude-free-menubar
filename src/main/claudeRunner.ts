@@ -1,5 +1,6 @@
 import * as pty from 'node-pty';
 import { IPty } from 'node-pty';
+import { join } from 'path';
 
 let ptyProcess: IPty | null = null;
 let onDataCallback: ((data: string) => void) | null = null;
@@ -21,16 +22,25 @@ export function startSession(onData: (data: string) => void): void {
   onDataCallback = onData;
   dataBuffer = ''; 
   
-  const home = process.env.HOME || '/Users/lucasjonasfernandes';
+  const isWin = process.platform === 'win32';
+  const home = process.env.USERPROFILE || process.env.HOME || '/Users/lucasjonasfernandes';
   const claudeHome = `${home}/.claude-free-home`;
-  const claudeBin = '/Users/lucasjonasfernandes/.claude-free-home/.claude/claude-free-wrapper.sh';
+  
+  // No Windows, o wrapper pode precisar ser um .bat ou chamar node diretamente
+  // Por enquanto, tentamos detectar se estamos no ambiente original ou um novo
+  const claudeBin = isWin 
+    ? join(home, '.claude-free-home', '.claude', 'claude-free-wrapper.bat') 
+    : '/Users/lucasjonasfernandes/.claude-free-home/.claude/claude-free-wrapper.sh';
 
   try {
-    ptyProcess = pty.spawn(claudeBin, [], {
+    const shell = isWin ? 'powershell.exe' : '/bin/bash';
+    const args = isWin ? ['-ExecutionPolicy', 'Bypass', '-File', claudeBin] : [claudeBin];
+
+    ptyProcess = pty.spawn(isWin ? shell : claudeBin, isWin ? args : [], {
       name: 'xterm-256color',
       cols: 80,
       rows: 24,
-      cwd: home + '/Developer',
+      cwd: join(home, 'Developer'),
       env: {
         ...process.env,
         HOME: claudeHome,
@@ -39,7 +49,7 @@ export function startSession(onData: (data: string) => void): void {
       },
     });
 
-    console.log('[claude-free] PTY iniciado, PID:', ptyProcess.pid);
+    console.log(`[claude-free] PTY iniciado (${process.platform}), PID:`, ptyProcess.pid);
 
     ptyProcess.onData((data: string) => {
       if (onDataCallback) {
