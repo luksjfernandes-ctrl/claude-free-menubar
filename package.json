@@ -1,0 +1,40 @@
+{
+  "name": "claude-free-menubar",
+  "version": "1.0.0",
+  "main": "out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build:native": "mkdir -p src/native && (SWIFT_MODULECACHE_PATH=/tmp/claude-swift-module-cache CLANG_MODULE_CACHE_PATH=/tmp/claude-clang-module-cache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -o src/native/transcribe-file src/native/transcribe-file.swift -framework Speech || SWIFT_MODULECACHE_PATH=/tmp/claude-swift-module-cache CLANG_MODULE_CACHE_PATH=/tmp/claude-clang-module-cache xcrun swiftc -o src/native/transcribe-file src/native/transcribe-file.swift -framework Speech) 2>&1 || echo 'Swift compilation failed - dictation will be unavailable'",
+    "copy:native": "mkdir -p out/native && cp -f src/native/transcribe-file out/native/transcribe-file 2>/dev/null || true",
+    "build": "npm run build:native && electron-vite build && npm run copy:native",
+    "preview": "electron-vite preview",
+    "start": "electron-vite preview"
+  },
+  "dependencies": {
+    "clsx": "^2.1.0",
+    "framer-motion": "^11.0.8",
+    "lucide-react": "^0.358.0",
+    "node-pty": "^1.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tailwind-merge": "^2.2.1",
+    "xterm": "^5.3.0",
+    "xterm-addon-fit": "^0.8.0"
+  },
+  "devDependencies": {
+    "@electron-toolkit/preload": "^3.0.0",
+    "@electron-toolkit/utils": "^3.0.0",
+    "@types/node": "^20.11.24",
+    "@types/react": "^18.2.61",
+    "@types/react-dom": "^18.2.19",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.18",
+    "electron": "^29.1.0",
+    "electron-rebuild": "^3.2.9",
+    "electron-vite": "^2.0.0",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.4"
+  }
+}
