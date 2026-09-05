@@ -1,6 +1,7 @@
 import * as pty from 'node-pty';
 import { IPty } from 'node-pty';
 import { join } from 'path';
+import { homedir } from 'os';
 
 let ptyProcess: IPty | null = null;
 let onDataCallback: ((data: string) => void) | null = null;
@@ -23,14 +24,14 @@ export function startSession(onData: (data: string) => void): void {
   dataBuffer = ''; 
   
   const isWin = process.platform === 'win32';
-  const home = process.env.USERPROFILE || process.env.HOME || '/Users/lucasjonasfernandes';
+  const home = process.env.USERPROFILE || process.env.HOME || homedir();
   const claudeHome = `${home}/.claude-free-home`;
   
   // No Windows, o wrapper pode precisar ser um .bat ou chamar node diretamente
   // Por enquanto, tentamos detectar se estamos no ambiente original ou um novo
   const claudeBin = isWin 
     ? join(home, '.claude-free-home', '.claude', 'claude-free-wrapper.bat') 
-    : '/Users/lucasjonasfernandes/.claude-free-home/.claude/claude-free-wrapper.sh';
+    : join(home, '.claude-free-home', '.claude', 'claude-free-wrapper.sh');
 
   try {
     const shell = isWin ? 'powershell.exe' : '/bin/bash';
