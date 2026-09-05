@@ -5,7 +5,7 @@
 # Forçar o PATH para incluir o Homebrew e os binários padrão do Mac
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
-PROJECT_DIR="/Users/lucasjonasfernandes/Developer/claude-free-menubar"
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo "🚀 Iniciando Claude-free Menubar em background..."
 
